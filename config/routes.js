@@ -1,4 +1,6 @@
 const axios = require('axios');
+const bcrypt = require("bcryptjs")
+const db = require('../database/dbConfig')
 
 const { authenticate } = require('../auth/authenticate');
 
@@ -8,8 +10,21 @@ module.exports = server => {
   server.get('/api/jokes', authenticate, getJokes);
 };
 
+const genToken = (user) => {
+ const payL = {
+  username: user.username
+ }
+
+ const secret = "antidisestablishmentarianism"
+
+ const options = {
+  expiresIn: '24h',
+ }
+}
+
 function register(req, res) {
   // implement user registration
+  const user = req.body
 }
 
 function login(req, res) {
