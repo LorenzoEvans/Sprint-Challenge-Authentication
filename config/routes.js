@@ -13,7 +13,7 @@ module.exports = server => {
 };
 
 const genToken = (user) => {
- const payL = {
+ const payload = {
   username: user.username,
  }
 
@@ -24,7 +24,7 @@ const genToken = (user) => {
   jwtid: '10101010ls'
  }
  
- return jwt.sign(payL, secret, options)
+ return jwt.sign(payload, secret, options)
 }
 
 function register(req, res) {
@@ -38,10 +38,10 @@ function register(req, res) {
     .then(ids => {
      res.json({id: ids[0]})
        })
-    .catch(() => {
+    .catch((err) => {
      res
       .status(500)
-      .json({error: "There was an error registering user."})
+      .json({error: "There was an error registering user.", err: err})
      })
 }
 
@@ -52,12 +52,18 @@ function login(req, res) {
   .where('username', user.username)
   .then((users) => {
    if (users.length && bcrypt.compareSync(user.password, users[0].password)) {
-    token = genToken(user)
+    const token = genToken(user)
     res.json({message: "You're logged in!", token})
      }
+     else {
+      res.status(401)
+         .json({you: "shan't pass!"})
+     }
     })
-    .catch(() => {
-
+    .catch((err) => {
+     res
+      .status(400)
+      .json(err)
     })
 }
 
