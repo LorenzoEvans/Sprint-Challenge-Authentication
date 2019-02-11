@@ -1,5 +1,5 @@
-const axios = require('axios');
 require('dotenv').config()
+const axios = require('axios');
 const bcrypt = require("bcryptjs")
 const DB = require('../database/dbConfig')
 const jwt = require('jsonwebtoken')
@@ -24,44 +24,37 @@ const genToken = (user) => {
   jwtid: '10101010ls'
  }
  
- return jwt.sign(payload, secret, options)
+ return jwt.sign(payL, secret, options)
 }
 
 function register(req, res) {
   // implement user registration
   const user = req.body
-  const id, token 
-  user.password = bcrypt.hashSync(user.password, 16)
+  
+  user.password = bcrypt.hashSync(user.password, 8)
+  console.log(user)
   DB('users')
     .insert(user)
     .then(ids => {
-     id = ids[0]
-     DB('users')
-       .where({id: id})
-       .first()
-       .then((user) => {
-        token = genToken(user)
+     res.json({id: ids[0]})
        })
-       .catch(() => {
-        res
-         .status(401)
-         .json({error: "Error generating token or token invalid."})
-       })
-    })
     .catch(() => {
      res
       .status(500)
       .json({error: "There was an error registering user."})
-    })
+     })
 }
 
 function login(req, res) {
   // implement user login
   const user = req.body
   DB('users')
-    .where('username', user.username)
-    .then((users) => {
-
+  .where('username', user.username)
+  .then((users) => {
+   if (users.length && bcrypt.compareSync(user.password, users[0].password)) {
+    token = genToken(user)
+    res.json({message: "You're logged in!", token})
+     }
     })
     .catch(() => {
 
