@@ -17,7 +17,7 @@ const genToken = (user) => {
   username: user.username,
  }
 
- const secret = process.env.JWT_SEC 
+ const secret = process.env.JWT_SECRET
 
  const options = {
   expiresIn: '24h',
